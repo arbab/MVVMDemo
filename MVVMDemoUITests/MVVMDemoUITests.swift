@@ -8,7 +8,8 @@
 import XCTest
 
 final class MVVMDemoUITests: XCTestCase {
-
+    let app: XCUIApplication = XCUIApplication()
+    
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
 
@@ -24,9 +25,13 @@ final class MVVMDemoUITests: XCTestCase {
 
     func testExample() throws {
         // UI tests must launch the application that they test.
-        let app = XCUIApplication()
+        
+        app.launchArguments.append("-logout")
         app.launch()
-
+       // Then, we can try to read this argument and, if detected, set the app state to unauthorized.
+        if CommandLine.arguments.contains("-logout") {
+            AppState.shared.set(authorized: false)
+        }
         // Use XCTAssert and related functions to verify your tests produce the correct results.
     }
 
@@ -37,5 +42,60 @@ final class MVVMDemoUITests: XCTestCase {
                 XCUIApplication().launch()
             }
         }
+    }
+    
+    func testLogin() throws {
+      LoginScreen(app: app)
+          .type(email: "test")
+          .type(password: "test")
+          .tapSignIn()
+          .verifyMessage()
+    }
+
+    func testLoginError() throws {
+      LoginScreen(app: app)
+          .type(email: "test")
+          .type(password: "test")
+          .tapSignInExpectingError()
+    }
+    
+}
+
+
+protocol Screen {
+    var app: XCUIApplication { get }
+}
+
+struct LoginScreen: Screen {
+    let app: XCUIApplication
+
+    func type(email: String) -> Self {
+        let loginTextField = app.textFields[AccessiblityIdentifiers.LoginScreen.loginTextField]
+        loginTextField.tap()
+        loginTextField.typeText(email)
+        return self
+    }
+
+    func type(password: String) -> Self {
+        let passwordTextField = app.textFields[AccessiblityIdentifiers.LoginScreen.passwordTextField]
+        passwordTextField.tap()
+        passwordTextField.typeText(password)
+        return self
+    }
+    
+    func tapSignIn() -> Self {
+        app.buttons[AccessiblityIdentifiers.LoginScreen.signInButton].tap()
+        return self
+    }
+
+    func verifyMessage() {
+        let message = app.staticTexts["Login Success"]
+        XCTAssert(message.exists)
+    }
+    
+    func tapSignInExpectingError() {
+        app.buttons[AccessiblityIdentifiers.LoginScreen.signInButton].tap()
+        let message = app.staticTexts["message"]
+        XCTAssert(message.exists)
     }
 }

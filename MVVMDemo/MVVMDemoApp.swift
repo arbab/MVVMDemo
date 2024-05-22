@@ -7,11 +7,12 @@
 
 import SwiftUI
 
-@main
-struct MVVMDemoApp: App {
+@maistruct MVVMDemoApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            //ContentView()
+            HomeView()
+        
         }
     }
 }
