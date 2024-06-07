@@ -15,13 +15,14 @@ struct AdaptiveScrollView<Content>: View where Content: View {
     var body: some View {
         ScrollView (.vertical) {
             VStack {
-                content()
+                content().background { Color.green}
                 Spacer()
+                Color.gray
             }
         }.background{
             GeometryReader { scrollViewGeometry in
                 
-                Color.clear.onAppear {
+                Color.blue.onAppear {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         withAnimation {
                             print("contsize.height: \(scrollViewGeometry.size.height)")
@@ -35,7 +36,15 @@ struct AdaptiveScrollView<Content>: View where Content: View {
 
 struct AdaptiveScrollView_Previews: PreviewProvider {
     static var previews: some View {
-        AdaptiveScrollView(content: { Text("Hello") })//, scrollOffset: 0)
+        AdaptiveScrollView(content: { VStack { Text("Hello")
+            Text("Hello")
+            Text("Hello")
+            Text("Hello")
+            Text("Hello")
+            Text("Hello")
+            Text("Hello")
+        }
+        })//, scrollOffset: 0)
     }
 }
 
